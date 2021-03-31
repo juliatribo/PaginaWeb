@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron d-flex align-items-center" style="background-color:white;">
+            <h4>GitHub Information</h4>
+            <div id="demo" class="container">
+                <form action="/action_page.php">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" value="">
+                    </div>
+                </form>
+                <button type="button" class="btn btn-info" onclick="loadDoc()">Show Repositories</button>
+            </div>
+        </div>
+    </div>
+    <script>function loadDoc() {
+        var obj, dbParam, xmlhttp, xmlhttp2, myObj, x, txt = "";
+        obj = { table: "repositories", limit: 20 };
+        dbParam = JSON.stringify(obj);
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                myObj = JSON.parse(this.responseText);
+                txt += "<h4>Repositories table</h4><div class = table-responsive><table class = table><thead><tr><th>Name</th><th>Description</th></tr></thead>"
+                for (x in myObj) {
+                    txt += "<tr><td>" + myObj[x].name + "</td><td>" + myObj[x].description + "</td></tr>";
+                }
+                txt += "</table></div >"
+                document.getElementById("demo").innerHTML = txt;
+            }
+        };
+        xmlhttp.open("GET", "https://api.github.com/users/" + $("#username").val() + "/repos", true);
+        xmlhttp.send("x=" + dbParam);
+        obj = { table: "followers", limit: 20 };
+        dbParam = JSON.stringify(obj);
+        xmlhttp2 = new XMLHttpRequest();
+        xmlhttp2.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                myObj = JSON.parse(this.responseText);
+                txt += "<h4>Followers:</h4><p>" + myObj.length + "</p>"
+            }
+            document.getElementById("demo").innerHTML = txt;
+        };
+        xmlhttp2.open("GET", "https://api.github.com/users/" + $("#username").val() + "/followers", true);
+        xmlhttp2.send("x=" + dbParam);
+    }</script>
+</body>
+</html>
